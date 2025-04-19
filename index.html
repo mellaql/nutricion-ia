@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -54,7 +15,6 @@
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Barra de navegación -->
     <nav class="bg-white shadow-md py-4 sticky top-0 z-10">
         <div class="container mx-auto px-4 flex justify-between items-center">
             <h1 class="text-2xl font-bold text-gray-800">Nutrición & IA</h1>
@@ -65,8 +25,6 @@
             </div>
         </div>
     </nav>
-
-    <!-- Encabezado -->
     <header id="home" class="bg-gradient-to-r from-green-500 to-teal-500 text-white py-16">
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl md:text-5xl font-bold mb-4">Noticias Relevantes sobre Nutrición e Inteligencia Artificial</h1>
@@ -74,22 +32,15 @@
             <button id="fetch-more-news" class="mt-6 bg-white text-green-600 font-semibold py-2 px-4 rounded-lg hover:bg-gray-100 transition">Cargar más noticias</button>
         </div>
     </header>
-
-    <!-- Contenedor de noticias -->
     <main class="container mx-auto px-4 py-12">
         <section id="news-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Las noticias se insertarán aquí mediante JavaScript -->
         </section>
-
-        <!-- Sección Acerca de -->
         <section id="about" class="mt-16">
             <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Acerca de</h2>
             <p class="text-gray-600 text-lg max-w-3xl mx-auto text-center">
                 Esta página es una beta creada por Sebastián Mella Fierro, estudiante de nutrición en IA. Estamos trabajando para actualizarla pronto y hacerla más funcional para toda la población, ofreciendo contenido innovador sobre nutrición e inteligencia artificial.
             </p>
         </section>
-
-        <!-- Sección Contacto -->
         <section id="contact" class="mt-16">
             <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Contacto</h2>
             <div class="flex justify-center space-x-12">
@@ -106,8 +57,6 @@
             </div>
         </section>
     </main>
-
-    <!-- Pie de página -->
     <footer class="bg-gray-900 text-white py-8">
         <div class="container mx-auto px-4 text-center">
             <p class="text-sm">Creado por Sebastián Mella Fierro, estudiante de nutrición en IA</p>
@@ -115,14 +64,10 @@
             <p class="text-sm mt-2">Datos proporcionados por <a href="https://newsapi.org" class="underline hover:text-green-400" target="_blank">NewsAPI</a></p>
         </div>
     </footer>
-
     <script>
-        // Reemplaza 'TU_API_KEY' con tu clave de NewsAPI (regístrate en newsapi.org)
         const apiKey = 'fae4c678c24741a298d1afaa8326cbf9';
         const newsContainer = document.getElementById('news-container');
         const fetchMoreNewsButton = document.getElementById('fetch-more-news');
-
-        // Noticias interesantes predefinidas (respaldo)
         const featuredNews = [
             {
                 title: 'IA que personaliza dietas según tu ADN',
@@ -145,12 +90,22 @@
             {
                 title: 'IA revoluciona la agricultura para alimentos más nutritivos',
                 description: 'Algoritmos de IA optimizan los cultivos para aumentar el contenido nutricional de frutas y verduras, prometiendo una alimentación más saludable.',
-                url: 'https://www.usda.gov/es/about-usda/news/blog/la-inteligencia-artificial-mejora-el-sistema-alimentario-de-estados-unidos',
+                url: 'https://www.usda.gov/es/about-usda/news/blog/la-inteligencia-artificial-mejora-el-sistema-alimentario-de-estados-unidos/',
                 urlToImage: 'https://images.unsplash.com/photo-1461354464878-ad92f492a5a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+            },
+            {
+                title: 'IA optimiza planes de nutrición deportiva',
+                description: 'Algoritmos de IA analizan el rendimiento y necesidades de atletas para crear dietas que maximizan el desempeño y la recuperación.',
+                url: 'https://saludpersonalizada.com/inteligencia-artificial-ia-en-nutricion-beneficios-y-desafios-para-la-salud/',
+                urlToImage: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+            },
+            {
+                title: 'Sistemas de IA para dietas sostenibles',
+                description: 'La IA ayuda a diseñar dietas que reducen el impacto ambiental mientras cumplen con las necesidades nutricionales individuales.',
+                url: 'https://blogsostenibilidad.tec.mx/es/reflexion/revelacion-del-futuro-ia-y-agricultura-digital-en-sistemas-de-alimentacion-sustentables/',
+                urlToImage: 'https://images.unsplash.com/photo-1504672281656-e3e2b69c2ce6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
             }
         ];
-
-        // Función para mezclar aleatoriamente un arreglo
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -158,9 +113,10 @@
             }
             return array;
         }
-
-        function displayNews(articles) {
-            newsContainer.innerHTML = '';
+        function displayNews(articles, append = false) {
+            if (!append) {
+                newsContainer.innerHTML = '';
+            }
             articles.forEach(article => {
                 const articleElement = document.createElement('article');
                 articleElement.className = 'news-card bg-white rounded-lg shadow-md overflow-hidden';
@@ -179,42 +135,30 @@
                 newsContainer.appendChild(articleElement);
             });
         }
-
-        async function fetchNutritionAINews() {
+        async function fetchNutritionAINews(append = false) {
             try {
-                // Obtener noticias de los últimos 3 años
                 const response = await fetch(
                     `https://newsapi.org/v2/everything?q=nutrition+"artificial intelligence"&language=es&from=2022-04-18&to=2025-04-18&sortBy=relevancy&apiKey=${apiKey}`
                 );
                 const data = await response.json();
-
                 if (data.articles && data.articles.length > 0) {
-                    // Mezclar aleatoriamente y seleccionar 4-6 noticias
                     const shuffledArticles = shuffleArray(data.articles);
-                    const selectedArticles = shuffledArticles.slice(0, Math.min(6, Math.max(4, shuffledArticles.length)));
-                    displayNews(selectedArticles);
+                    const selectedArticles = shuffledArticles.slice(0, 6); // Siempre 6 noticias
+                    displayNews(selectedArticles, append);
                 } else {
-                    // Mostrar noticias predefinidas si no hay resultados
-                    displayNews(featuredNews);
+                    displayNews(featuredNews.slice(0, 6), append);
                 }
             } catch (error) {
                 console.error('Error al obtener noticias:', error);
-                // Mostrar noticias predefinidas en caso de error
-                displayNews(featuredNews);
+                displayNews(featuredNews.slice(0, 6), append);
             }
         }
-
-        // Mostrar noticias predefinidas al cargar la página
-        displayNews(featuredNews);
-
-        // Actualizar noticias cada 20 minutos (1200 segundos)
-        setInterval(fetchNutritionAINews, 1200 * 1000);
-
-        // Cargar noticias inmediatamente al iniciar
-        fetchNutritionAINews();
-
-        // Evento para cargar más noticias manualmente
-        fetchMoreNewsButton.addEventListener('click', fetchNutritionAINews);
+        // Cargar noticias predefinidas al inicio
+        displayNews(featuredNews.slice(0, 6));
+        // Actualización automática cada 20 minutos (reemplaza todas)
+        setInterval(() => fetchNutritionAINews(false), 1200 * 1000);
+        // Cargar 6 noticias más al hacer clic (añade, no reemplaza)
+        fetchMoreNewsButton.addEventListener('click', () => fetchNutritionAINews(true));
     </script>
 </body>
 </html>
